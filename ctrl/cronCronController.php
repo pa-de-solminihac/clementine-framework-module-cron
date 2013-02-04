@@ -16,8 +16,7 @@ class cronCronController extends cronCronController_Parent
     public function __construct($request, $params = null)
     {
         $cron_config = Clementine::$config['clementine_cron'];
-        if ($request->METHOD == 'CLI'
-            || !isset($cron_config['allowed_ip']) 
+        if (!isset($cron_config['allowed_ip']) 
             || (isset($cron_config['allowed_ip']) && (!$cron_config['allowed_ip'] || (in_array($_SERVER['REMOTE_ADDR'], explode(',', $cron_config['allowed_ip'])))))) {
             // no time limit
             ini_set('max_execution_time', 0);
@@ -25,8 +24,8 @@ class cronCronController extends cronCronController_Parent
             define('__NO_DEBUG_DIV__', 1);
             // get action info in order to log start and stop date
             $req = $this->getRequest();
-            $this->crontask['lang']       = $req->LANG;
-            $this->crontask['action']     = $req->ACT;
+            $this->crontask['lang']       = $req['LANG'];
+            $this->crontask['action']     = $req['ACT'];
             $this->crontask['date_start'] = date('Y-m-d H:i:s');
             $this->crontask['date_stop']  = null;
             // log start date
