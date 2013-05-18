@@ -27,7 +27,7 @@ class cronCronController extends cronCronController_Parent
     public function __construct($request, $params = null)
     {
         $cron_config = Clementine::$config['clementine_cron'];
-        if ($request->METHOD == 'CLI'
+        if ($request->INVOCATION_METHOD == 'CLI'
             || !isset($cron_config['allowed_ip']) 
             || (isset($cron_config['allowed_ip']) && (!$cron_config['allowed_ip'] || (in_array($_SERVER['REMOTE_ADDR'], explode(',', $cron_config['allowed_ip'])))))) {
             // no time limit
