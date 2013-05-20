@@ -30,8 +30,10 @@ class cronCronController extends cronCronController_Parent
         if ($request->INVOCATION_METHOD == 'CLI'
             || !isset($cron_config['allowed_ip']) 
             || (isset($cron_config['allowed_ip']) && (!$cron_config['allowed_ip'] || (in_array($_SERVER['REMOTE_ADDR'], explode(',', $cron_config['allowed_ip'])))))) {
-            // no time limit
-            ini_set('max_execution_time', 0);
+            // set limits... to none by default
+            ini_set('max_execution_time', $cron_config['max_execution_time']);
+            ini_set('memory_limit', $cron_config['memory_limit']);
+            ignore_user_abort($cron_config['ignore_user_abort']);
             // be quiet
             define('__NO_DEBUG_DIV__', 1);
             // get action info in order to log start and stop date
