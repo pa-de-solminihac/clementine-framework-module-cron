@@ -92,5 +92,49 @@ class cronCronModel extends cronCronModel_Parent
         return true;
     }
 
+    /**
+     * list_running : returns a list of tasks running for a least $seconds_ago seconds
+     * 
+     * @param mixed $seconds_ago 
+     * @access public
+     * @return void
+     */
+    public function list_running($seconds_ago = null)
+    {
+        if (empty($seconds_ago)) {
+            $seconds_ago = Clementine::$config['clementine_cron']['warning_if_longer_than'];
+        }
+        $date_limite = date('Y-m-d H:i:s', mktime(date('H'), date('i'), date('s') - $seconds_ago));
+        $db = $this->getModel('db');
+        // recupere les taches qui ont été lancées il y a au moins $seconds_ago secondes et ne se sont pas terminées
+        $sql = "
+            SELECT DISTINCT `lang`, `action`, MAX(`date_start`) as `date_start`
+              FROM `" . $this->crontable . "`
+             WHERE `date_start` <= '" . $db->escape_string($date_limite) . "'
+               AND `date_stop` IS NULL
+             GROUP BY `lang`, `action`
+             ORDER BY `date_start` DESC
+        ";
+        $stmt = $db->query($sql);
+        $tasks = array();
+        for (true; $res = $db->fetch_assoc($stmt); true) {
+            // verifie si la tache a été terminée lors d'un lancement ultérieur
+            $sql_ult = "
+                SELECT DISTINCT `lang`, `action`
+                  FROM `" . $this->crontable . "`
+                 WHERE `date_start` > '" . $db->escape_string($res['date_start']) . "'
+                   AND `date_stop` > '" . $db->escape_string($res['date_start']) . "'
+                   AND `lang` = '" . $db->escape_string($res['lang']) . "'
+                   AND `action` = '" . $db->escape_string($res['action']) . "'
+            ";
+            $stmt_ult = $db->query($sql_ult);
+            // renvoie faux si la tache ne s'est pas lancee et terminee depuis, on la garde dans notre liste
+            if (!$db->num_rows($stmt_ult)) {
+                $tasks[] = $res;
+            }
+        }
+        return $tasks;
+    }
+
 }
 ?>
