@@ -7,7 +7,6 @@ Module CRON
 
 * You can force the call not to be ignored with force=1
 
-
 Usage
 -----
 
