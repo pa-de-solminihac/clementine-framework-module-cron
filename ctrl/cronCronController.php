@@ -30,8 +30,14 @@ class cronCronController extends cronCronController_Parent
         if ($request->INVOCATION_METHOD == 'CLI'
             || !isset($cron_config['allowed_ip']) 
             || (isset($cron_config['allowed_ip']) && (!$cron_config['allowed_ip'] || (in_array($_SERVER['REMOTE_ADDR'], explode(',', $cron_config['allowed_ip'])))))) {
+            // display errors
+            ini_set('display_errors', Clementine::$config['clementine_debug']['display_errors']);
+            $error_reporting = eval('return (' . Clementine::$config['clementine_debug']['error_reporting'] . ');');
+            ini_set('error_reporting', $error_reporting);
             // set limits... to none by default
-            ini_set('max_execution_time', $cron_config['max_execution_time']);
+            if ($cron_config['max_execution_time']) {
+                ini_set('max_execution_time', $cron_config['max_execution_time']);
+            }
             ini_set('memory_limit', $cron_config['memory_limit']);
             ignore_user_abort($cron_config['ignore_user_abort']);
             // be quiet
@@ -117,6 +123,22 @@ class cronCronController extends cronCronController_Parent
     {
         return $this->getModel('cron')->get_last_execution_date($this->crontask);
     }
+
+    /**
+     * selfcheckAction : sends a list of tasks that did seems to take more than warning_if_longer_than seconds to Clementine::$config['clementine_global']['email_dev']
+     * 
+     * @param mixed $request 
+     * @param mixed $params 
+     * @access public
+     * @return void
+     */
+    public function selfcheckAction($request, $params = null)
+    {
+        // TODO...
+        // be quiet
+        return array('dont_getblock' => true);
+    }
+    
 
 }
 ?>
