@@ -13,5 +13,5 @@ Usage
 Add your cron tasks this way, in order to be warned by the system if something fails and was not caught by Clementine
 
 ```bash
-cd /path/to/site/root/dir && /path/to/php5 index.php "http://www.domain.com" "cron/task" || echo "Clementine CRON failed : www.domain.com/cron/task"
+cd /path/to/site/root/dir && /path/to/php5 index.php "http://www.domain.com" "cron/task" || echo "PHP return code was $?" | mail -s "Clementine CRON failed : www.domain.com/cron/task" email@domain.com
 ```
