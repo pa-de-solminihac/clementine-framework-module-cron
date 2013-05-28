@@ -138,16 +138,18 @@ class cronCronController extends cronCronController_Parent
         // get tasks running for more than configured time and not having been run successfully since then
         $seconds_ago = Clementine::$config['clementine_cron']['warning_if_longer_than'];
         $tasks = $cron->list_running($seconds_ago);
-        $infos = array(
-            'seconds_ago'   => $seconds_ago,
-            'tasks'         => $tasks
-        );
-        $sendmail_titre    = Clementine::$config['clementine_global']['site_name'] . " : cron selfcheck errors";
-        $sendmail_template = 'cron/mail_selfcheck';
-        $sendmail_to       = Clementine::$config['clementine_global']['email_dev'];
-        $sendmail_from     = Clementine::$config['clementine_global']['email_exp'];
-        $sendmail_fromname = Clementine::$config['clementine_global']['site_name'];
-        $this->getHelper('mails')->send($infos, $sendmail_titre, $sendmail_template, $sendmail_to, $sendmail_from, $sendmail_fromname, $params);
+        if ($tasks) {
+            $infos = array(
+                'seconds_ago'   => $seconds_ago,
+                'tasks'         => $tasks
+            );
+            $sendmail_titre    = Clementine::$config['clementine_global']['site_name'] . " : cron selfcheck errors";
+            $sendmail_template = 'cron/mail_selfcheck';
+            $sendmail_to       = Clementine::$config['clementine_global']['email_dev'];
+            $sendmail_from     = Clementine::$config['clementine_global']['email_exp'];
+            $sendmail_fromname = Clementine::$config['clementine_global']['site_name'];
+            $this->getHelper('mails')->send($infos, $sendmail_titre, $sendmail_template, $sendmail_to, $sendmail_from, $sendmail_fromname, $params);
+        }
         return array('dont_getblock' => true);
     }
     
