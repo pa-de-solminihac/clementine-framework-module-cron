@@ -1,5 +1,5 @@
-Module CRON
-===========
+Clementine Framework : module CRON
+===
 
 * Logs each call of cron/action into database, with start and end date
 
