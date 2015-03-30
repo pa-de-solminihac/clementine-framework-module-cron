@@ -3,7 +3,21 @@ Clementine Framework : module CRON
 
 * Logs each call of cron/action into database, with start and end date
 
-* By default, ignore consecutive calls if previous task is still running, and triggers a notice (you will get it by mail if you enabled it)
+* By default, if previous same task is still running, triggers a notice (you will get it by mail if you have enabled it - and you should have)
+
+* Self-check : sends a list of tasks that seems to take more than `[clementine_cron]warning_if_longer_than` seconds
+
+Configuration
+---
+
+```ini
+[clementine_cron]
+allowed_ip= ; 127.0.0.1 for example
+memory_limit=-1
+max_execution_time=0
+ignore_user_abort=1
+warning_if_longer_than=86400
+```
 
 Best practices
 --------------
@@ -17,14 +31,14 @@ cd /path/to/site/root/dir && /path/to/php5 index.php "http://www.domain.com" "cr
 
 ***Monitoring cron tasks***
 
-Add the special cron/selfcheck task to your server, in order to get reports of failed cron tasks :
+Add the special __cron/selfcheck__ task to your server, in order to get reports of failed cron tasks :
 ```bash
 cd /path/to/site/root/dir && /path/to/php5 index.php "http://www.domain.com" "cron/selfcheck" || echo "PHP return code was $?" | mail -s "Clementine CRON failed : www.domain.com/cron/selfcheck" email@domain.com
 ```
 
 ***Tips***
 
-* You can force the call not to be ignored by passing the parameter `force=1`
+* You can force the call not to be ignored by passing the parameter `force=1` :
 
 ```bash
 # dont ignore consecutive calls
