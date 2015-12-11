@@ -3,7 +3,7 @@ Clementine Framework : module CRON
 
 * Logs each call of cron/action into database, with start and end date
 
-* By default, if previous same task is still running, triggers a notice (you will get it by mail if you have enabled it - and you should have)
+* Skip task if it is still running, and triggers a notice (you will get it by mail if you have enabled it - and you should have). You can force the task not to be ignored with `force=1`
 
 * Self-check : sends a list of tasks that seems to take more than `[clementine_cron]warning_if_longer_than` seconds
 
