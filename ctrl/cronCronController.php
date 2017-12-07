@@ -148,7 +148,11 @@ class cronCronController extends cronCronController_Parent
             $sendmail_to       = Clementine::$config['clementine_global']['email_dev'];
             $sendmail_from     = Clementine::$config['clementine_global']['email_exp'];
             $sendmail_fromname = Clementine::$config['clementine_global']['site_name'];
-            $this->getHelper('mails')->send($infos, $sendmail_titre, $sendmail_template, $sendmail_to, $sendmail_from, $sendmail_fromname, $params);
+            //$this->getHelper('mail')->send($infos, $sendmail_titre, $sendmail_template, $sendmail_to, $sendmail_from, $sendmail_fromname, $params);
+            $contenu = $this->getBlockHtml('cron/mail_selfcheck', $infos);
+            $contenu_texte = $ns->strip_tags(str_replace('<hr />', '------------------------------', str_replace('<br />', "\n", $contenu))) . "\n";
+            $ns->envoie_mail($sendmail_to, $sendmail_from, $sendmail_fromname, $sendmail_titre, $contenu_texte, $contenu);
+
         }
         return array('dont_getblock' => true);
     }
