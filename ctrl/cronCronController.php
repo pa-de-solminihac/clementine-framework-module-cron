@@ -3,13 +3,14 @@
  * cronCronController : clementine cron module
  *     check if ip is allowed
  *     log cron calls into database
- *     ignore calls if previous task is still running (cronCronModel provides is_running() and get_last_execution_date())
- * 
- * @package 
+ *     ignore calls if previous task is still running
+ *     (cronCronModel provides is_running() and get_last_execution_date())
+ *
+ * @package
  * @version $id$
- * @copyright 
- * @author Pierre-Alexis <pa@quai13.com> 
- * @license 
+ * @copyright
+ * @author Pierre-Alexis <pa@quai13.com>
+ * @license
  */
 class cronCronController extends cronCronController_Parent
 {
@@ -28,7 +29,7 @@ class cronCronController extends cronCronController_Parent
     {
         $cron_config = Clementine::$config['clementine_cron'];
         if ($request->INVOCATION_METHOD == 'CLI'
-            || !isset($cron_config['allowed_ip']) 
+            || !isset($cron_config['allowed_ip'])
             || (isset($cron_config['allowed_ip']) && (!$cron_config['allowed_ip'] || (in_array($_SERVER['REMOTE_ADDR'], explode(',', $cron_config['allowed_ip'])))))) {
             // display errors
             ini_set('display_errors', Clementine::$config['clementine_debug']['display_errors']);
@@ -139,20 +140,19 @@ class cronCronController extends cronCronController_Parent
         $seconds_ago = Clementine::$config['clementine_cron']['warning_if_longer_than'];
         $tasks = $cron->list_running($seconds_ago);
         if ($tasks) {
-            $infos = array(
-                'seconds_ago'   => $seconds_ago,
-                'tasks'         => $tasks
+            $params = array(
+                'to'           => Clementine::$config['clementine_global']['email_dev'],
+                'from'         => Clementine::$config['clementine_global']['email_exp'],
+                'fromname'     => Clementine::$config['clementine_global']['site_name'],
+                'title'        => Clementine::$config['clementine_global']['site_name'] . " : cron selfcheck errors",
+                'message_html' => $this->getBlockHtml('cron/mail_selfcheck', array(
+                    'seconds_ago'   => $seconds_ago,
+                    'tasks'         => $tasks,
+                )),
             );
-            $sendmail_titre    = Clementine::$config['clementine_global']['site_name'] . " : cron selfcheck errors";
-            $sendmail_template = 'cron/mail_selfcheck';
-            $sendmail_to       = Clementine::$config['clementine_global']['email_dev'];
-            $sendmail_from     = Clementine::$config['clementine_global']['email_exp'];
-            $sendmail_fromname = Clementine::$config['clementine_global']['site_name'];
-            $this->getHelper('mails')->send($infos, $sendmail_titre, $sendmail_template, $sendmail_to, $sendmail_from, $sendmail_fromname, $params);
+            $this->getHelper('mail')->send($params);
         }
         return array('dont_getblock' => true);
     }
-    
 
 }
-?>
